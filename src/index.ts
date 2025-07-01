@@ -2,6 +2,7 @@ import { create, Whatsapp } from 'venom-bot';
 import Tesseract from 'tesseract.js';
 import fs from 'fs';
 import path from 'path';
+import dayjs from 'dayjs';
 
 // --- FUNÇÃO DE LOG SIMPLIFICADA ---
 function log(level: 'INFO' | 'WARN' | 'ERROR', message: string, ...args: any[]) {
@@ -119,7 +120,7 @@ async function start(client: Whatsapp) {
 
     if (cliente?.etapa === 'aguardando_pagamento') {
       if (message.mimetype?.includes('image')) {
-        const caminho = path.join(pastaTmp, `comprovante-${numero}.jpg`);
+        const caminho = path.join(pastaTmp, `comprovante-${numero}-${dayjs().toISOString()}.jpg`);
         const buffer = await client.decryptFile(message);
 
         fs.mkdirSync(path.dirname(caminho), { recursive: true });
@@ -217,6 +218,9 @@ create({
     '--v=1',
     '--disable-infobars',
     '--window-size=1920,1080',
+    '--disable-ipc-flooding-protection', // Adicione esta
+    '--disable-renderer-backgrounding', // Adicione esta
+    '--disable-background-timer-throttling'
   ],
   logQR: true,
   updatesLog: true,
